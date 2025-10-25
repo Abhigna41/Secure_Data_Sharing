@@ -1,10 +1,11 @@
 CacheControl==0.14.2
 cachetools==5.5.2
-certifi==2025.1.31
+certifi==2023.7.22
 cffi==1.17.1
 charset-normalizer==3.4.1
 cryptography==44.0.2
 firebase-admin==6.7.0
+Flask==2.3.3
 google-api-core==2.24.2
 google-api-python-client==2.165.0
 google-auth==2.38.0
@@ -32,3 +33,6 @@ requests==2.32.3
 rsa==4.9
 uritemplate==4.1.1
 urllib3==2.3.0
+Werkzeug==2.3.7
+Flask==2.3.3
+Werkzeug==2.3.7

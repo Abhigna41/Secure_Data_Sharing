@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Log - Secure Data Sharing System{% endblock %}
+
+{% block head %}
+<style>
+    .card {
+        background: white;
+        border: 1px solid #e3e6f0;
+        border-radius: 8px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+    }
+    .card-header {
+        background-color: #4e73df;
+        color: white;
+        border-bottom: 1px solid #4e73df;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+    }
+    .table {
+        margin-bottom: 0;
+    }
+    .table thead th {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+        color: #5a5c69;
+        font-weight: 600;
+        border-top: none;
+        padding: 0.75rem 1rem;
+    }
+    .table tbody td {
+        border-top: 1px solid #e3e6f0;
+        padding: 0.75rem 1rem;
+        vertical-align: middle;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+    .badge {
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .badge.bg-primary {
+        background-color: #4e73df !important;
+    }
+    .badge.bg-success {
+        background-color: #1cc88a !important;
+    }
+    .badge.bg-warning {
+        background-color: #f6c23e !important;
+        color: #5a5c69 !important;
+    }
+    .badge.bg-info {
+        background-color: #36b9cc !important;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: #6c757d;
+    }
+    .empty-state h5 {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+    .empty-state p {
+        max-width: 400px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+    .stat-card {
+        background: white;
+        border: 1px solid #e3e6f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.15);
+        transform: translateY(-2px);
+    }
+    .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #4e73df;
+    }
+    .stat-card p {
+        color: #6c757d;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    .text-primary {
+        color: #4e73df !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="page-title mb-0">
+                <i class="fas fa-clipboard-list text-primary me-2"></i>Activity Log
+            </h1>
+            <nav>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Activity Log</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-list me-2"></i>Recent Activity
+                    </h6>
+                    <span class="badge bg-primary">{{ activity_log|length }}</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if activity_log %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-clock me-2"></i>Timestamp
+                                </th>
+                                <th>
+                                    <i class="fas fa-user me-2"></i>User
+                                </th>
+                                <th>
+                                    <i class="fas fa-play me-2"></i>Action
+                                </th>
+                                <th>
+                                    <i class="fas fa-info-circle me-2"></i>Details
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log_entry in activity_log %}
+                            <tr>
+                                <td>
+                                    <small class="text-muted">{{ log_entry.timestamp }}</small>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">{{ log_entry.user_id }}</span>
+                                </td>
+                                <td>
+                                    {% if log_entry.action == 'login' %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                                        </span>
+                                    {% elif log_entry.action == 'encrypt' %}
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-lock me-1"></i>Encrypt
+                                        </span>
+                                    {% elif log_entry.action == 'decrypt' %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-unlock me-1"></i>Decrypt
+                                        </span>
+                                    {% elif log_entry.action == 'file_encrypt' %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-file-lock me-1"></i>File Encrypt
+                                        </span>
+                                    {% elif log_entry.action == 'file_decrypt' %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-file-unlock me-1"></i>File Decrypt
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-cog me-1"></i>{{ log_entry.action|title }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ log_entry.details }}</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state text-center py-5">
+                    <i class="fas fa-inbox mb-3" style="font-size: 3rem; opacity: 0.3; color: #6c757d;"></i>
+                    <h5 class="mb-2">No Activity Recorded</h5>
+                    <p class="text-muted mb-0">System activities will appear here once users start interacting with the system.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Activity Statistics -->
+<div class="row mt-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ activity_log | selectattr('action', 'equalto', 'login') | list | length }}</h3>
+                    <p>Total Logins</p>
+                </div>
+                <i class="fas fa-users fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ (activity_log | selectattr('action', 'equalto', 'encrypt') | list | length) + (activity_log | selectattr('action', 'equalto', 'file_encrypt') | list | length) }}</h3>
+                    <p>Encryptions</p>
+                </div>
+                <i class="fas fa-lock fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ (activity_log | selectattr('action', 'equalto', 'decrypt') | list | length) + (activity_log | selectattr('action', 'equalto', 'file_decrypt') | list | length) }}</h3>
+                    <p>Decryptions</p>
+                </div>
+                <i class="fas fa-unlock fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ users|length }}</h3>
+                    <p>Total Users</p>
+                </div>
+                <i class="fas fa-user-friends fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Current Users -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-users"></i> Registered Users
+                </h5>
+                <small>All users currently registered in the system</small>
+            </div>
+            <div class="card-body">
+                {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-user"></i> User ID</th>
+                                <th><i class="fas fa-user-tag"></i> Role</th>
+                                <th><i class="fas fa-tags"></i> Attributes</th>
+                                <th><i class="fas fa-check-circle"></i> Status</th>
+                                <th><i class="fas fa-cogs"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_id, user_info in users.items() %}
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">{{ user_id }}</strong>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" 
+                                            onclick="copyUserId('{{ user_id }}')" 
+                                            title="Copy User ID">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if user_info.role == 'admin' else 'primary' }} fs-6">
+                                        <i class="fas fa-{{ 'crown' if user_info.role == 'admin' else 'user' }}"></i>
+                                        {{ user_info.role.title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% for attr in user_info.attributes %}
+                                        <span class="badge bg-success me-1">{{ attr }}</span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fas fa-check-circle"></i> Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-info" 
+                                                onclick="selectUserForRevoke('{{ user_id }}')"
+                                                title="Select for attribute revocation">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No users registered yet</h5>
+                    <p class="text-muted">Use the form above to register your first user.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

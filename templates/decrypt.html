@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+
+{% block title %}Decrypt - Secure Data Sharing System{% endblock %}
+
+{% block head %}
+<style>
+    .card {
+        background: white;
+        border: 1px solid #e3e6f0;
+        border-radius: 8px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+    }
+    .card-header {
+        background-color: #4e73df;
+        color: white;
+        border-bottom: 1px solid #4e73df;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        color: white;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2653d4;
+        transform: translateY(-1px);
+    }
+    .btn-outline-secondary {
+        border: 1px solid #6c757d;
+        color: #6c757d;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+    .btn-success {
+        background-color: #1cc88a;
+        border-color: #1cc88a;
+        color: white;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    .btn-success:hover {
+        background-color: #17a673;
+        border-color: #169b6b;
+    }
+    .btn-outline-success {
+        border: 1px solid #1cc88a;
+        color: #1cc88a;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-success:hover {
+        background-color: #1cc88a;
+        border-color: #1cc88a;
+        color: white;
+    }
+    .btn-outline-primary {
+        border: 1px solid #4e73df;
+        color: #4e73df;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-primary:hover {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        color: white;
+    }
+    .form-control {
+        border: 1px solid #d1d3e2;
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out;
+    }
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    .alert {
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-left: 4px solid #1cc88a;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #e74a3b;
+    }
+    .alert-info {
+        background-color: #cce8f4;
+        color: #0c5460;
+        border-left: 4px solid #36b9cc;
+    }
+    .text-primary {
+        color: #4e73df !important;
+    }
+    .badge {
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    .badge.bg-primary {
+        background-color: #4e73df !important;
+    }
+    .btn-xs {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 0.25rem;
+    }
+    .btn-close-attr {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 0.7rem;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        opacity: 0.8;
+    }
+    .btn-close-attr:hover {
+        opacity: 1;
+        color: #fff;
+    }
+    .attributes-display .badge {
+        position: relative;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">Decrypt Message</h1>
+
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Decrypt Message</li>
+                </ol>
+            </h1>   
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0">
+                    <i class="fas fa-unlock me-2"></i>Decrypt Message
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" id="decryptForm">
+                    <div class="mb-4">
+                        <label for="data_id" class="form-label fw-semibold">
+                            <i class="fas fa-fingerprint me-2"></i> Data ID *
+                        </label>
+                        <input type="text" class="form-control" id="data_id" name="data_id" 
+                               placeholder="Enter the Data ID (e.g., fd81af56308fe8f163b4...)" 
+                               required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Enter the unique Data ID you received when encrypting the message.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="required_attribute" class="form-label fw-semibold">
+                            <i class="fas fa-key me-2"></i> Required Attribute (Optional)
+                        </label>
+                        <input type="text" class="form-control" id="required_attribute" name="required_attribute" 
+                               placeholder="Enter the attribute name (e.g., Saru, admin, user)" 
+                               pattern="[a-zA-Z0-9_]+" 
+                               title="Only letters, numbers, and underscores allowed">
+                        <div class="form-text">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            If you know the specific attribute required for this data, enter it here. 
+                            The system will automatically add it to your profile if missing.
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">Common attributes:</small>
+                            <div class="btn-group-sm mt-1" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-xs me-1" onclick="setRequiredAttribute('admin')">admin</button>
+                                <button type="button" class="btn btn-outline-success btn-xs me-1" onclick="setRequiredAttribute('user')">user</button>
+                                <button type="button" class="btn btn-outline-info btn-xs me-1" onclick="setRequiredAttribute('read_access')">read_access</button>
+                                <button type="button" class="btn btn-outline-warning btn-xs me-1" onclick="setRequiredAttribute('write_access')">write_access</button>
+                                <button type="button" class="btn btn-outline-secondary btn-xs" onclick="setRequiredAttribute('Saru')">Saru</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Attributes Section -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-user-tag me-2"></i> Your Current Attributes
+                        </label>
+                        <div class="border rounded p-3 bg-light">
+                            <div class="attributes-display mb-3">
+                                {% for attr in session.get('user_attributes', []) %}
+                                    <span class="badge bg-success me-2 mb-2" id="attr-{{ attr }}">
+                                        <i class="fas fa-tag me-1"></i>{{ attr }}
+                                        <button type="button" class="btn-close-attr ms-2" onclick="removeAttribute('{{ attr }}')" title="Remove attribute">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                {% endfor %}
+                                {% if not session.get('user_attributes') %}
+                                    <div class="text-muted small" id="no-attributes-msg">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        No attributes currently assigned
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Add new attribute -->
+                            <div class="row g-2">
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control form-control-sm" 
+                                           id="new-attribute" placeholder="Add new attribute (e.g., admin, user, read_access)..."
+                                           pattern="[a-zA-Z0-9_]+" title="Only letters, numbers, and underscores allowed">
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="button" class="btn btn-success btn-sm w-100" onclick="addAttribute()">
+                                        <i class="fas fa-plus me-1"></i> Add Attribute
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <small class="text-muted">Quick add common attributes:</small><br>
+                                <button type="button" class="btn btn-outline-primary btn-xs me-1 mt-1" onclick="addAttribute('admin')">admin</button>
+                                <button type="button" class="btn btn-outline-success btn-xs me-1 mt-1" onclick="addAttribute('user')">user</button>
+                                <button type="button" class="btn btn-outline-info btn-xs me-1 mt-1" onclick="addAttribute('read_access')">read_access</button>
+                                <button type="button" class="btn btn-outline-warning btn-xs me-1 mt-1" onclick="addAttribute('write_access')">write_access</button>
+                                <button type="button" class="btn btn-outline-secondary btn-xs mt-1" onclick="addAttribute('Saru')">Saru</button>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Add the attributes you need to decrypt this data. The system checks these attributes against the data's access policy.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="decryptBtn">
+                            <i class="fas fa-unlock me-2"></i> Decrypt Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Pass server data to JavaScript -->
+<script type="application/json" id="user-attributes-data">
+{{ session.get('user_attributes', [])|tojson }}
+</script>
+
+<script>
+// Track current user attributes
+let currentAttributes = new Set();
+
+// Initialize attributes from server data
+try {
+    const attributesData = JSON.parse(document.getElementById('user-attributes-data').textContent);
+    attributesData.forEach(attr => currentAttributes.add(attr));
+} catch (e) {
+    console.error('Error loading user attributes:', e);
+}
+
+// Simple form validation
+document.getElementById('decryptForm').addEventListener('submit', function(e) {
+    const dataId = document.getElementById('data_id').value.trim();
+    const submitBtn = document.getElementById('decryptBtn');
+    
+    if (dataId.length < 8) {
+        e.preventDefault();
+        alert('Data ID seems too short. Please check and try again.');
+        return;
+    }
+    
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Decrypting...';
+    submitBtn.disabled = true;
+    
+    // Re-enable after 10 seconds as failsafe
+    setTimeout(() => {
+        submitBtn.innerHTML = '<i class="fas fa-unlock me-2"></i> Decrypt Data';
+        submitBtn.disabled = false;
+    }, 10000);
+});
+
+// Function to set required attribute from quick buttons
+function setRequiredAttribute(attrName) {
+    document.getElementById('required_attribute').value = attrName;
+    
+    // Highlight the input briefly
+    const input = document.getElementById('required_attribute');
+    input.style.borderColor = '#28a745';
+    input.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
+    
+    setTimeout(() => {
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+    }, 1000);
+}
+
+// Auto-format data ID input
+document.getElementById('data_id').addEventListener('input', function(e) {
+    let value = e.target.value;
+    // Remove any spaces and convert to lowercase
+    value = value.replace(/\s/g, '').toLowerCase();
+    e.target.value = value;
+});
+
+// Add attribute function
+function addAttribute(attributeName) {
+    // Get attribute name from input if not provided
+    if (!attributeName) {
+        attributeName = document.getElementById('new-attribute').value.trim();
+        document.getElementById('new-attribute').value = '';
+    }
+    
+    if (!attributeName) {
+        showNotification('Please enter an attribute name', 'warning');
+        return;
+    }
+    
+    // Validate attribute name
+    if (!/^[a-zA-Z0-9_]+$/.test(attributeName)) {
+        showNotification('Attribute name can only contain letters, numbers, and underscores', 'error');
+        return;
+    }
+    
+    if (currentAttributes.has(attributeName)) {
+        showNotification('Attribute "' + attributeName + '" already exists', 'warning');
+        return;
+    }
+    
+    // Add to current set
+    currentAttributes.add(attributeName);
+    
+    // Update display
+    updateAttributeDisplay();
+    
+    // Send to server
+    updateServerAttributes();
+    
+    showNotification('Attribute "' + attributeName + '" added successfully', 'success');
+}
+
+// Remove attribute function
+function removeAttribute(attributeName) {
+    if (!currentAttributes.has(attributeName)) {
+        return;
+    }
+    
+    currentAttributes.delete(attributeName);
+    updateAttributeDisplay();
+    updateServerAttributes();
+    
+    showNotification('Attribute "' + attributeName + '" removed', 'info');
+}
+
+// Update attribute display
+function updateAttributeDisplay() {
+    const container = document.querySelector('.attributes-display');
+    const noAttrMsg = document.getElementById('no-attributes-msg');
+    
+    // Clear existing badges (but keep the no-attributes message for now)
+    const badges = container.querySelectorAll('.badge');
+    badges.forEach(badge => badge.remove());
+    
+    if (currentAttributes.size === 0) {
+        if (noAttrMsg) {
+            noAttrMsg.style.display = 'block';
+        } else {
+            container.innerHTML += `
+                <div class="text-muted small" id="no-attributes-msg">
+                    <i class="fas fa-info-circle me-1"></i>
+                    No attributes currently assigned
+                </div>
+            `;
+        }
+    } else {
+        if (noAttrMsg) {
+            noAttrMsg.style.display = 'none';
+        }
+        
+        // Add all current attributes
+        currentAttributes.forEach(attr => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-success me-2 mb-2';
+            badge.id = 'attr-' + attr;
+            badge.innerHTML = `
+                <i class="fas fa-tag me-1"></i>${attr}
+                <button type="button" class="btn-close-attr ms-2" onclick="removeAttribute('${attr}')" title="Remove attribute">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(badge);
+        });
+    }
+}
+
+// Send updated attributes to server
+function updateServerAttributes() {
+    const formData = new FormData();
+    formData.append('action', 'update_attributes');
+    formData.append('attributes', Array.from(currentAttributes).join(','));
+    
+    fetch('/update_user_attributes', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.error('Failed to update attributes on server:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating attributes:', error);
+    });
+}
+
+// Show notification function
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'error' ? 'times-circle' : 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// Handle Enter key in attribute input
+document.getElementById('new-attribute').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        addAttribute();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Decryption Result - Secure Data Sharing System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-header mb-4">
+            <h1 class="page-title">Decryption Result</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('decrypt_data') }}">Decrypt</a></li>
+                    <li class="breadcrumb-item active">Result</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Decryption Result -->
+        <div class="card border-success shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-unlock"></i> 
+                    {% if filename %}File{% else %}Data{% endif %} Decrypted Successfully!
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if filename %}
+                <!-- File Decryption Result -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6>File Information:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Filename:</strong> 
+                                <code>{{ filename }}</code>
+                                {% if filename.lower().endswith('.csv') %}
+                                    <span class="badge bg-info ms-2">CSV File</span>
+                                {% endif %}
+                            </li>
+                            <li><strong>Size:</strong> 
+                                {% if file_size %}
+                                    {% if file_size > 1024*1024 %}
+                                        {{ "%.2f"|format(file_size|int/(1024*1024)) }} MB
+                                    {% else %}
+                                        {{ "%.2f"|format(file_size|int/1024) }} KB
+                                    {% endif %}
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </li>
+                            <li><strong>Type:</strong> 
+                                {% if filename.lower().endswith('.csv') %}
+                                    <span class="text-primary">Comma-Separated Values</span>
+                                {% elif filename.lower().endswith('.txt') %}
+                                    <span class="text-secondary">Text File</span>
+                                {% else %}
+                                    <span class="text-info">{{ filename.split('.')[-1].upper() if '.' in filename else 'Unknown' }}</span>
+                                {% endif %}
+                            </li>
+                            <li><strong>Status:</strong> <span class="badge bg-success">Decrypted & Ready</span></li>
+                        </ul>
+                        
+                        {% if filename.lower().endswith('.csv') %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-table me-2"></i>
+                            <strong>CSV File Ready:</strong> Your CSV file has been successfully decrypted and is ready for download. 
+                            You can open it with Excel, Google Sheets, or any spreadsheet application.
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Download Options:</h6>
+                        <div class="d-grid gap-2">
+                            {% if download_link %}
+                            <a href="{{ url_for('files.download', filename=download_link) }}" 
+                               class="btn btn-success btn-lg">
+                                <i class="fas fa-download"></i> Download {{ filename.split('.')[-1].upper() if '.' in filename else 'File' }}
+                            </a>
+                            {% endif %}
+                            
+                            {% if filename.lower().endswith('.csv') %}
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i>
+                                    CSV files can be opened with:
+                                </small>
+                                <ul class="small text-muted mb-0">
+                                    <li>Microsoft Excel</li>
+                                    <li>Google Sheets</li>
+                                    <li>LibreOffice Calc</li>
+                                    <li>Any text editor</li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Message Decryption Result -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6>Decrypted Message:</h6>
+                        <div class="alert alert-info">
+                            <pre id="message" style="white-space: pre-wrap; margin: 0; max-height: 300px; overflow-y: auto;">{{ message }}</pre>
+                        </div>
+                        <button class="btn btn-outline-primary me-2" onclick="copyToClipboard('message')">
+                            <i class="fas fa-copy"></i> Copy Message
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Download Options:</h6>
+                        <div class="d-grid gap-2">
+                            {% if download_link %}
+                            <a href="{{ url_for('files.download', filename=download_link) }}" 
+                               class="btn btn-success">
+                                <i class="fas fa-download"></i> Download as TXT File
+                            </a>
+                            {% endif %}
+                            <button class="btn btn-outline-secondary" onclick="downloadAsFile()">
+                                <i class="fas fa-file-alt"></i> Save Custom Filename
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6>Data Information:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Data ID:</strong> 
+                                    <code class="small">{{ data_id[:16] }}...</code>
+                                </li>
+                                <li><strong>Size:</strong> {{ message|length }} characters</li>
+                                <li><strong>Status:</strong> <span class="badge bg-success">Decrypted</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            <div class="card-footer">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+                {% if filename %}
+                <a href="{{ url_for('file_decrypt') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-unlock"></i> Decrypt Another File
+                </a>
+                {% else %}
+                <a href="{{ url_for('decrypt_data') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-unlock"></i> Decrypt Another Message
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent || element.innerText;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            showFeedback('Copied to clipboard!', 'success');
+        });
+    } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showFeedback('Copied to clipboard!', 'success');
+    }
+}
+
+function downloadAsFile() {
+    const message = document.getElementById('message').textContent;
+    const filename = prompt('Enter filename (without extension):', 'decrypted_message') || 'decrypted_message';
+    
+    if (filename) {
+        const blob = new Blob([message], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showFeedback('File downloaded successfully!', 'success');
+    }
+}
+
+function showFeedback(message, type) {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : 'info'}"></i> ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.parentNode.removeChild(alert);
+        }
+    }, 3000);
+}
+</script>
+
+<style>
+/* Clean Admin Dashboard Style */
+.page-header {
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    color: #5A5C69;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: #858796;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #858796;
+}
+
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.text-success {
+    color: #1cc88a !important;
+}
+
+.text-primary {
+    color: #4e73df !important;
+}
+
+.font-weight-bold {
+    font-weight: 600 !important;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-success {
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+}
+
+.btn-outline-primary {
+    color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-outline-secondary {
+    color: #858796;
+    border-color: #858796;
+}
+
+.bg-success {
+    background-color: #1cc88a !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.border-success {
+    border-color: #1cc88a !important;
+}
+</style>
+{% endblock %}

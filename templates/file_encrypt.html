@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Encrypt File - Secure Data Sharing System{% endblock %}
+
+{% block head %}
+<style>
+    .card {
+        background: white;
+        border: 1px solid #e3e6f0;
+        border-radius: 8px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+    }
+    .card-header {
+        background-color: #4e73df;
+        color: white;
+        border-bottom: 1px solid #4e73df;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        color: white;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2653d4;
+        transform: translateY(-1px);
+    }
+    .form-control {
+        border: 1px solid #d1d3e2;
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out;
+    }
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    .file-upload-zone {
+        border: 2px dashed #d1d3e2;
+        border-radius: 8px;
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #f8f9fc;
+    }
+    .file-upload-zone:hover {
+        border-color: #4e73df;
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+    .alert {
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+    }
+    .alert-info {
+        background-color: #cce8f4;
+        color: #0c5460;
+        border-left: 4px solid #36b9cc;
+    }
+    .text-primary {
+        color: #4e73df !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">
+                <i class="fas fa-file-lock text-primary"></i> Encrypt File
+            </h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Encrypt File</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0">
+                    <i class="fas fa-file-lock me-2"></i>Encrypt File
+                </h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">
+                            <i class="fas fa-file"></i> Select File
+                        </label>
+                        <div class="file-upload-zone" onclick="document.getElementById('file').click()">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <p class="mb-2">Click to select file or drag and drop</p>
+                            <p class="small text-muted">Maximum file size: 16MB</p>
+                        </div>
+                        <input type="file" class="form-control d-none" id="file" name="file" required>
+                        <div class="form-text">
+                            Select any file type to encrypt (documents, images, videos, etc.).
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="policy" class="form-label">
+                            <i class="fas fa-key"></i> Access Policy
+                        </label>
+                        <input type="text" class="form-control" id="policy" name="policy" 
+                               placeholder="e.g., admin AND manager" required>
+                        <div class="form-text">
+                            Define who can access this file using attribute-based policies.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-lock me-2"></i> Encrypt File
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- File Types Info -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-file-alt"></i> Supported File Types
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Documents:</h6>
+                        <ul class="small">
+                            <li>PDF, DOC, DOCX</li>
+                            <li>TXT, RTF</li>
+                            <li>XLS, XLSX</li>
+                            <li>PPT, PPTX</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Media:</h6>
+                        <ul class="small">
+                            <li>JPG, PNG, GIF</li>
+                            <li>MP4, AVI, MOV</li>
+                            <li>MP3, WAV</li>
+                            <li>ZIP, RAR</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Code:</h6>
+                        <ul class="small">
+                            <li>PY, JS, HTML</li>
+                            <li>CSS, JSON</li>
+                            <li>SQL, XML</li>
+                            <li>Any text file</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Clean Admin Dashboard Style */
+.page-header {
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    color: #5A5C69;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: #858796;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #858796;
+}
+
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.text-primary {
+    color: #4e73df !important;
+}
+
+.font-weight-bold {
+    font-weight: 600 !important;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-outline-secondary {
+    color: #858796;
+    border-color: #858796;
+}
+
+.form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+</style>
+
+<script>
+document.getElementById('file').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+    const uploadZone = document.querySelector('.file-upload-zone');
+    if (e.target.files[0]) {
+        uploadZone.innerHTML = `
+            <i class="fas fa-file fa-3x text-success mb-3"></i>
+            <p class="mb-2"><strong>${fileName}</strong></p>
+            <p class="small text-muted">File selected successfully</p>
+        `;
+    }
+});
+</script>
+{% endblock %}

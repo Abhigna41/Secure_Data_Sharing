@@ -119,9 +119,13 @@ class ABECrypto:
         
         # Check attributes against policy
         user_attributes = set(user_data['attributes'])
-        policy_attributes = set(policy.split(' and '))
-        if not policy_attributes.issubset(user_attributes):
-            raise Exception("Attributes do not satisfy policy.")
+        
+        # Improved policy evaluation
+        if self._evaluate_policy(policy, user_attributes):
+            print(f"DEBUG: Policy satisfied - User: {user_attributes}, Policy: {policy}")
+        else:
+            print(f"DEBUG: Policy NOT satisfied - User: {user_attributes}, Policy: {policy}")
+            raise Exception(f"You do not have the required attributes to decrypt this data. Policy: '{policy}', Your attributes: {list(user_attributes)}")
         
         # Decrypt AES key with master's private key
         cipher_rsa = PKCS1_OAEP.new(self.master_key)
@@ -145,3 +149,65 @@ class ABECrypto:
         
         updated_attributes = [attr for attr in current_attributes if attr != attribute_to_revoke]
         return self.delegate_key_update(user_id, updated_attributes)
+    
+    def _evaluate_policy(self, policy, user_attributes):
+        """
+        Enhanced policy evaluation that handles AND, OR, and parentheses
+        Examples:
+        - "admin" -> user must have 'admin'
+        - "user AND read_access" -> user must have both 'user' and 'read_access'
+        - "admin OR manager" -> user must have either 'admin' or 'manager'
+        - "(admin OR manager) AND active" -> user must have ('admin' or 'manager') and 'active'
+        """
+        import re
+        
+        # Clean up the policy string
+        policy = policy.strip()
+        
+        # Handle simple single attribute case
+        if not any(op in policy.upper() for op in [' AND ', ' OR ', '(', ')']):
+            return policy.strip() in user_attributes
+        
+        # Replace attribute names with True/False based on user attributes
+        def replace_attributes(match):
+            attr = match.group(0).strip()
+            return 'True' if attr in user_attributes else 'False'
+        
+        # Find all attribute names (sequences of word characters, digits, and underscores)
+        # that are not Python keywords (AND, OR, True, False)
+        attribute_pattern = r'\b(?!(?:AND|OR|True|False|and|or)\b)[a-zA-Z_][a-zA-Z0-9_]*\b'
+        
+        # Convert policy to uppercase for consistency
+        policy_upper = policy.upper()
+        
+        # Replace AND/OR with Python operators
+        policy_upper = policy_upper.replace(' AND ', ' and ')
+        policy_upper = policy_upper.replace(' OR ', ' or ')
+        
+        # Find and replace attribute names with boolean values
+        attributes_found = re.findall(attribute_pattern, policy_upper)
+        
+        # Create a copy for evaluation
+        eval_policy = policy_upper
+        
+        # Replace each attribute with its boolean value
+        for attr in set(attributes_found):  # Use set to avoid duplicate replacements
+            if attr.upper() not in ['AND', 'OR', 'TRUE', 'FALSE']:
+                # Use word boundaries to ensure exact matches
+                attr_pattern = r'\b' + re.escape(attr) + r'\b'
+                replacement = 'True' if attr in user_attributes else 'False'
+                eval_policy = re.sub(attr_pattern, replacement, eval_policy, flags=re.IGNORECASE)
+        
+        print(f"DEBUG: Original policy: {policy}")
+        print(f"DEBUG: Evaluation policy: {eval_policy}")
+        print(f"DEBUG: User attributes: {user_attributes}")
+        
+        try:
+            # Safely evaluate the boolean expression
+            result = eval(eval_policy)
+            print(f"DEBUG: Policy evaluation result: {result}")
+            return result
+        except Exception as e:
+            print(f"DEBUG: Error evaluating policy '{policy}': {e}")
+            # Fallback to simple attribute check
+            return policy.strip() in user_attributes

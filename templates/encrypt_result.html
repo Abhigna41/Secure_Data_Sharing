@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Operation Result - Secure Data Sharing System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-header mb-4">
+            <h1 class="page-title">Operation Result</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Result</li>
+                </ol>
+                
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        {% if data_id %}
+        <!-- Encryption Result -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    {% if filename %}File{% else %}Data{% endif %} Encrypted Successfully!
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Data ID:</h6>
+                        <div class="alert alert-info">
+                            <code id="dataId">{{ data_id }}</code>
+                            <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('dataId')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Access Policy:</h6>
+                        <div class="alert alert-warning">
+                            <code>{{ policy }}</code>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if filename %}
+                <div class="row">
+                    <div class="col-12">
+                        <h6>File Information:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Filename:</strong> {{ filename }}</li>
+                            <li><strong>Status:</strong> <span class="badge bg-success">Encrypted & Stored</span></li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> Save the Data ID above. You'll need it to decrypt the 
+                    {% if filename %}file{% else %}message{% endif %} later.
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+                {% if filename %}
+                <a href="{{ url_for('file_encrypt') }}" class="btn btn-success">
+                    <i class="fas fa-file-lock"></i> Encrypt Another File
+                </a>
+                {% else %}
+                <a href="{{ url_for('encrypt_data') }}" class="btn btn-success">
+                    <i class="fas fa-lock"></i> Encrypt Another Message
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if message %}
+        <!-- Decryption Result -->
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-unlock"></i> 
+                    {% if filename %}File{% else %}Data{% endif %} Decrypted Successfully!
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if filename %}
+                <!-- File Decryption Result -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>File Information:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Filename:</strong> {{ filename }}</li>
+                            <li><strong>Size:</strong> 
+                                {% if file_size %}
+                                    {{ "%.2f"|format(file_size|int/1024) }} KB
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </li>
+                            <li><strong>Status:</strong> <span class="badge bg-success">Decrypted</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Download:</h6>
+                        <a href="{{ url_for('files.download', filename=download_link) }}" 
+                           class="btn btn-success btn-lg">
+                            <i class="fas fa-download"></i> Download File
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Message Decryption Result -->
+                <h6>Decrypted Message:</h6>
+                <div class="alert alert-info">
+                    <pre style="white-space: pre-wrap; margin: 0;">{{ message }}</pre>
+                </div>
+                <button class="btn btn-outline-primary" onclick="copyToClipboard('message')">
+                    <i class="fas fa-copy"></i> Copy Message
+                </button>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+                {% if filename %}
+                <a href="{{ url_for('file_decrypt') }}" class="btn btn-danger">
+                    <i class="fas fa-file-unlock"></i> Decrypt Another File
+                </a>
+                {% else %}
+                <a href="{{ url_for('decrypt_data') }}" class="btn btn-primary">
+                    <i class="fas fa-unlock"></i> Decrypt Another Message
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent || element.innerText;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopyFeedback();
+        });
+    } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopyFeedback();
+    }
+}
+
+function showCopyFeedback() {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alert.style.top = '20px';
+    alert.style.right = '20px';
+    alert.style.zIndex = '9999';
+    alert.innerHTML = `
+        <i class="fas fa-check"></i> Copied to clipboard!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.parentNode.removeChild(alert);
+        }
+    }, 3000);
+}
+</script>
+
+<style>
+/* Clean Admin Dashboard Style */
+.page-header {
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    color: #5A5C69;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: #858796;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #858796;
+}
+
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.text-success {
+    color: #1cc88a !important;
+}
+
+.text-primary {
+    color: #4e73df !important;
+}
+
+.font-weight-bold {
+    font-weight: 600 !important;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-success {
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+}
+
+.btn-outline-secondary {
+    color: #858796;
+    border-color: #858796;
+}
+
+.bg-success {
+    background-color: #1cc88a !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+</style>
+{% endblock %}

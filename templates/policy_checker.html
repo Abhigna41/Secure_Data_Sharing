@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+
+{% block title %}Attribute Checker - Secure Data Sharing System{% endblock %}
+
+{% block head %}
+<style>
+    .card {
+        background: white;
+        border: 1px solid #e3e6f0;
+        border-radius: 8px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+    }
+    .card-header {
+        background-color: #4e73df;
+        color: white;
+        border-bottom: 1px solid #4e73df;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+    }
+    .card-header.bg-success {
+        background-color: #1cc88a !important;
+        border-bottom: 1px solid #1cc88a;
+    }
+    .card-header.bg-warning {
+        background-color: #f6c23e !important;
+        border-bottom: 1px solid #f6c23e;
+        color: #5a5c69 !important;
+    }
+    .card-header.bg-danger {
+        background-color: #e74a3b !important;
+        border-bottom: 1px solid #e74a3b;
+    }
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        color: white;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2653d4;
+        transform: translateY(-1px);
+    }
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #d1d3e2;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    .attribute-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        color: white;
+        padding: 0.5rem 1rem;
+        margin: 0.25rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+    .check-result {
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    .check-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    .check-failure {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+    .policy-example {
+        background-color: #f8f9fc;
+        border: 1px solid #e3e6f0;
+        border-radius: 6px;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .policy-example:hover {
+        background-color: #e3e6f0;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-header mb-4">
+            <h1 class="page-title">
+                <i class="fas fa-search text-primary me-2"></i>Attribute Policy Checker
+            </h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Policy Checker</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Current User Attributes -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-user-shield me-2"></i>Your Current Attributes
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    {% if user_attributes %}
+                        {% for attr in user_attributes %}
+                            <span class="attribute-badge">{{ attr }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-muted text-center py-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No attributes assigned yet
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center">
+                    <a href="{{ url_for('user_attributes') }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Manage Attributes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Policy Checker -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-key me-2"></i>Test Access Policy
+                </h6>
+            </div>
+            <div class="card-body">
+                <form id="policyCheckForm">
+                    <div class="mb-3">
+                        <label for="policy" class="form-label fw-bold">
+                            <i class="fas fa-shield-alt"></i> Enter Policy to Test
+                        </label>
+                        <input type="text" class="form-control form-control-lg" 
+                               id="policy" name="policy" 
+                               placeholder="e.g., admin OR (user AND read_access)" 
+                               required>
+                        <div class="form-text">
+                            Enter an access policy to check if your attributes satisfy it
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-check-circle"></i> Check Policy
+                    </button>
+                </form>
+                
+                <div id="checkResult"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Examples -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-lightbulb me-2"></i>Example Policies
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">Click on any example to test it:</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-gray-800 mb-3">
+                            <i class="fas fa-list me-2"></i>Simple Policies
+                        </h6>
+                        <div class="policy-example" onclick="testPolicy('admin')">
+                            <code>admin</code>
+                            <small class="text-muted d-block">Requires admin attribute</small>
+                        </div>
+                        <div class="policy-example" onclick="testPolicy('user AND read_access')">
+                            <code>user AND read_access</code>
+                            <small class="text-muted d-block">Both attributes required</small>
+                        </div>
+                        <div class="policy-example" onclick="testPolicy('manager OR supervisor')">
+                            <code>manager OR supervisor</code>
+                            <small class="text-muted d-block">Either attribute works</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-gray-800 mb-3">
+                            <i class="fas fa-cogs me-2"></i>Complex Policies
+                        </h6>
+                        <div class="policy-example" onclick="testPolicy('(admin OR manager) AND active')">
+                            <code>(admin OR manager) AND active</code>
+                            <small class="text-muted d-block">Must have admin/manager + active</small>
+                        </div>
+                        <div class="policy-example" onclick="testPolicy('department_hr AND (level1 OR level2)')">
+                            <code>department_hr AND (level1 OR level2)</code>
+                            <small class="text-muted d-block">HR department with level access</small>
+                        </div>
+                        <div class="policy-example" onclick="testPolicy('read_access AND (write_access OR admin)')">
+                            <code>read_access AND (write_access OR admin)</code>
+                            <small class="text-muted d-block">Read access + write or admin</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-question-circle me-2"></i>Troubleshooting Decryption Issues
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-danger mb-3">Common Issues:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                <strong>Missing Attributes:</strong> You don't have the required attributes
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                <strong>Case Sensitivity:</strong> Attribute names must match exactly
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                <strong>Complex Policies:</strong> AND/OR logic not satisfied
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success mb-3">Solutions:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Add Missing Attributes:</strong> Use "My Attributes" page
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Check Policy:</strong> Use this checker tool
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Contact Admin:</strong> Request attribute assignment
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pass server data to JavaScript -->
+<script type="application/json" id="user-attributes-data">
+{{ user_attributes|tojson }}
+</script>
+
+<script>
+// Current user attributes from server
+let userAttributes = [];
+
+try {
+    userAttributes = JSON.parse(document.getElementById('user-attributes-data').textContent);
+} catch (e) {
+    console.error('Error loading user attributes:', e);
+    userAttributes = [];
+}
+
+function testPolicy(policy) {
+    document.getElementById('policy').value = policy;
+    checkPolicy(policy);
+}
+
+function checkPolicy(policy) {
+    // Simple policy evaluation logic (client-side preview)
+    try {
+        // Convert policy to evaluable format
+        let evalPolicy = policy.toUpperCase();
+        
+        // Replace AND/OR with JavaScript operators
+        evalPolicy = evalPolicy.replace(/ AND /g, ' && ');
+        evalPolicy = evalPolicy.replace(/ OR /g, ' || ');
+        
+        // Replace attribute names with boolean values
+        const attributePattern = /\b[a-zA-Z_][a-zA-Z0-9_]*\b/g;
+        evalPolicy = evalPolicy.replace(attributePattern, function(match) {
+            if (match === '&&' || match === '||' || match === 'TRUE' || match === 'FALSE') {
+                return match;
+            }
+            return userAttributes.includes(match.toLowerCase()) ? 'true' : 'false';
+        });
+        
+        // Evaluate the policy
+        const result = eval(evalPolicy);
+        
+        // Display result
+        const resultDiv = document.getElementById('checkResult');
+        if (result) {
+            resultDiv.innerHTML = `
+                <div class="check-result check-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>ACCESS GRANTED!</strong> Your attributes satisfy this policy.
+                    <br><small>Policy: <code>${policy}</code></small>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="check-result check-failure">
+                    <i class="fas fa-times-circle me-2"></i>
+                    <strong>ACCESS DENIED!</strong> Your attributes do not satisfy this policy.
+                    <br><small>Policy: <code>${policy}</code></small>
+                    <br><small class="mt-2">You need to add the missing attributes to access data encrypted with this policy.</small>
+                </div>
+            `;
+        }
+    } catch (error) {
+        document.getElementById('checkResult').innerHTML = `
+            <div class="check-result check-failure">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>INVALID POLICY!</strong> Could not evaluate this policy.
+                <br><small>Error: ${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+// Handle form submission
+document.getElementById('policyCheckForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const policy = document.getElementById('policy').value.trim();
+    if (policy) {
+        checkPolicy(policy);
+    }
+});
+</script>
+{% endblock %}

@@ -1,101 +1,119 @@
-# Secure Data Sharing System
+# Secure Data Sharing System - Web Application
 
-## Overview
+A Flask-based web application for secure data sharing using Attribute-Based Encryption (ABE).
 
-The Secure Data Sharing System is a Python-based application designed to facilitate secure data sharing using Attribute-Based Encryption (ABE). This system ensures that data access is governed by user attributes and predefined policies. By leveraging RSA for key encryption and AES for data encryption, it guarantees both confidentiality and integrity of the shared data.
+## 🚀 Quick Start
 
-Key highlights include seamless integration with Firebase Firestore for storing user attributes, access credentials (ACs), and encrypted messages. The system also features a user-friendly graphical interface built with Tkinter, enabling users to manage access credentials, encrypt/decrypt data, and dynamically revoke attributes as needed. This robust solution is ideal for scenarios requiring fine-grained access control and secure data sharing.
-
-## Key Features
-
-- **Attribute-Based Encryption (ABE):** Data access is controlled by policies defined as conjunctions of attributes (e.g., `motel` and `emp`).
-- **Secure Encryption:** Uses RSA for key encryption and AES for data encryption.
-- **Firebase Integration:** Stores user data, ACs, and encrypted messages in Firebase Firestore.
-- **GUI Interface:** A user-friendly Tkinter-based GUI for interacting with the system.
-- **Attribute Revocation:** Supports revoking attributes from users, updating their access rights dynamically.
-- **Error Handling:** Robust validation and error handling for edge cases (e.g., empty inputs, invalid policies).
-- **Logging:** Outputs logs to both the GUI and terminal for debugging and monitoring.
-
-## Prerequisites
-
-Before setting up the project, ensure you have the following:
-
-- **Python 3.8+:** The project is built using Python.
-- **Firebase Account:** A Firebase project with Firestore enabled for data storage.
-- **PowerShell:** For activating the virtual environment on Windows (optional but recommended).
-- **Git:** For cloning the repository (optional).
-
-## Setup Instructions
-
-### 1. Clone the Repository
-
-Clone the project repository to your local machine:
-
-```bash
-git clone https://github.com/Dharmareddy8520/Secure_Data_Sharing-System
-cd secure-data-sharing
+### Option 1: Complete Setup & Run
+```bat
+run_complete_fixed.bat
 ```
 
-### 2. Set Up a Virtual Environment
-
-Create and activate a virtual environment:
-
-- On Windows:
-  ```bash
-  python -m venv venv
-  .\venv\Scripts\activate
-  ```
-- On macOS/Linux:
-  ```bash
-  python3 -m venv venv
-  source venv/bin/activate
-  ```
-
-### 3. Install Dependencies
-
-Install the required Python packages:
-
-```bash
-pip install -r requirements.txt
+### Option 2: Direct Run
+```bat
+run_fixed.bat
 ```
 
-### 4. Configure Firebase
-
-- Create a Firebase project and enable Firestore.
-- Download the `serviceAccountKey.json` file from Firebase and place it in the project directory.
-- Update the Firebase configuration in the `config.py` file.
-
-### 5. Run the Application
-
-Start the application:
-
+### Option 3: Manual Run
 ```bash
-python main.py
+python app_simple.py
 ```
 
-## Usage
+Then visit: **http://localhost:5000**
 
-1. **Launch the GUI:** Run the application to open the Tkinter-based interface.
-2. **Manage Access Credentials:** Add, update, or revoke user attributes and policies.
-3. **Encrypt Data:** Use the GUI to encrypt data based on attribute-based policies.
-4. **Decrypt Data:** Decrypt data by providing the correct access credentials.
-5. **Monitor Logs:** View logs in the GUI or terminal for debugging and monitoring.
+## 📁 Essential Files
 
-## Contributing
+### Core Application
+- `app_simple.py` - Main Flask web application
+- `abe_crypto.py` - Attribute-Based Encryption implementation
+- `firebase_utils.py` - Firebase integration utilities
+- `config.py` - Configuration settings
 
-Contributions are welcome! To contribute:
+### Configuration
+- `firebase_service_account.json` - Firebase credentials
+- `master_key.pem` - Master encryption key
+- `requirements.txt` - Python dependencies
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes and push the branch.
-4. Open a pull request.
+### Templates
+- `templates/` - HTML templates for web interface
+  - `base.html` - Base template
+  - `dashboard.html` - Main dashboard
+  - `login_simple.html` - Simple login page
+  - `encrypt.html` - Message encryption
+  - `decrypt.html` - Message decryption
+  - `file_encrypt.html` - File encryption
+  - `file_decrypt.html` - File decryption
+  - `manage_users.html` - User management
+  - `activity_log.html` - Activity logging
+  - `encrypt_result.html` - Encryption results
+  - `decrypt_result.html` - Decryption results
 
-## License
+### Runtime Directories
+- `uploads/` - Temporary file uploads
+- `downloads/` - Decrypted file downloads
+- `venv/` - Python virtual environment
 
-This project is licensed under the [MIT License](LICENSE).
+### Batch Files
+- `run_complete_fixed.bat` - Complete setup and run
+- `run_fixed.bat` - Simple run
 
-## Acknowledgments
+## 🔧 Features
 
-- The developers of PyCrypto and PyCryptodome for encryption libraries.
-- Firebase for providing a robust backend solution.
-- The Python community for their invaluable resources and support.
+### ✅ Web Interface
+- **Simple Login**: No password required, just enter any username
+- **Message Encryption/Decryption**: Secure text message handling
+- **File Encryption/Decryption**: Upload and encrypt files
+- **User Management**: Create users with specific attributes
+- **Activity Logging**: Track all system operations
+- **Auto-Registration**: Users automatically registered with proper credentials
+
+### ✅ Security Features
+- **Attribute-Based Encryption**: Policy-based access control
+- **Firebase Integration**: Secure cloud storage
+- **Master Key Management**: RSA key-based security
+- **Access Control**: User attribute verification
+
+### ✅ User Experience
+- **Modern Web UI**: Bootstrap-based responsive design
+- **No Complex Setup**: Auto-login and user registration
+- **Clear Error Handling**: Informative error messages
+- **Quick Actions**: Preset user creation buttons
+
+## 🎯 How to Use
+
+1. **Start the Application**: Run `run_complete_fixed.bat`
+2. **Access Web Interface**: Open http://localhost:5000
+3. **Simple Login**: Enter any username (e.g., "alice", "testuser")
+4. **Encrypt Data**: Go to "Encrypt Data" → Enter message → Get Data ID
+5. **Decrypt Data**: Go to "Decrypt Data" → Enter Data ID → View decrypted message
+6. **Manage Users**: Go to "User Management" → Create users with attributes
+7. **File Operations**: Upload and encrypt files, then decrypt and download
+
+## 🛠️ Technical Details
+
+- **Framework**: Flask (Python web framework)
+- **Encryption**: Attribute-Based Encryption with RSA/AES
+- **Database**: Firebase Firestore
+- **Frontend**: Bootstrap 5 + Custom CSS
+- **Authentication**: Simplified (no passwords required)
+
+## 📝 Notes
+
+- **Development Mode**: Debug mode enabled for development
+- **Auto-Registration**: Users automatically get proper encryption credentials
+- **File Size Limit**: 16MB maximum file size
+- **Session Management**: Web sessions maintain user state
+- **Error Logging**: All operations logged for debugging
+
+## 🔄 Recent Fixes
+
+- ✅ Fixed decryption "User not found" errors
+- ✅ Improved user management interface
+- ✅ Enhanced auto-registration system
+- ✅ Better error handling and debugging
+- ✅ Simplified login process
+- ✅ **Cleaned up codebase and removed ALL unused files**
+
+---
+
+**Ready to use! Clean, minimal, and fully functional.**

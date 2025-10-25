@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Secure Data Sharing System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <div class="row">
+                    <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                    <div class="col-lg-6">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                            </div>
+                            
+                            <!-- Login Tabs -->
+                            <ul class="nav nav-tabs mb-4" id="loginTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="guest-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#guest" type="button" role="tab">
+                                        <i class="fas fa-user-circle me-2"></i>Guest Login
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="admin-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#admin" type="button" role="tab">
+                                        <i class="fas fa-user-shield me-2"></i>Admin Login
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="loginTabContent">
+                                <!-- Guest Login Tab -->
+                                <div class="tab-pane fade show active" id="guest" role="tabpanel">
+                                    <form method="POST" action="{{ url_for('guest_login') }}">
+                                        <div class="form-group mb-4">
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>Guest Access:</strong> Click below to access the system as a guest user.
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Login as Guest
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Admin Login Tab -->
+                                <div class="tab-pane fade" id="admin" role="tabpanel">
+                                    <form method="POST" class="user">
+                                        <div class="form-group mb-3">
+                                            <input type="text" class="form-control form-control-user" 
+                                                   id="user_id" name="user_id" placeholder="Enter User ID..." required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <input type="password" class="form-control form-control-user"
+                                                   id="password" name="password" placeholder="Password..." required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Login Page Styles */
+.bg-login-image {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.form-control-user {
+    font-size: 0.8rem;
+    border-radius: 10rem;
+    padding: 1.5rem 1rem;
+}
+
+.btn-user {
+    font-size: 0.8rem;
+    border-radius: 10rem;
+    padding: 0.75rem 1rem;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #858796;
+}
+
+.nav-tabs .nav-link.active {
+    color: #4e73df;
+    border-bottom-color: #4e73df;
+    background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    border-bottom-color: #4e73df;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.text-gray-900 {
+    color: #3a3b45 !important;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+</style>
+{% endblock %}

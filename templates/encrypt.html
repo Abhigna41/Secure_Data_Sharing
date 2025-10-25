@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Encrypt Data - Secure Data Sharing System{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">Encrypt Message</h1>
+
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Encrypt Message</li>
+                </ol>
+            </h1>   
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-lock me-2"></i>Encrypt Message
+                </h6>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" id="encryptForm" class="needs-validation" novalidate>
+                    <div class="mb-4">
+                        <label for="message" class="form-label fw-semibold">
+                            <i class="fas fa-comment-alt me-2"></i> Message to Encrypt *
+                        </label>
+                        <textarea class="form-control form-control-lg" id="message" name="message" rows="6" 
+                                  placeholder="Enter your sensitive message here..." 
+                                  required style="resize: vertical;"></textarea>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            This message will be encrypted and stored securely. Only users with matching attributes can decrypt it.
+                        </div>
+                        <div class="invalid-feedback">
+                            Please enter a message to encrypt.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="policy" class="form-label fw-semibold">
+                            <i class="fas fa-key me-2"></i> Access Policy *
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="policy" name="policy" 
+                               placeholder="e.g., user, admin, read_access AND write_access"
+                               required>
+                        <div class="form-text">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Define who can access this data using attribute-based policies.
+                            Use "AND" to require multiple attributes.
+                        </div>
+                        <div class="invalid-feedback">
+                            Please enter a valid access policy.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4" id="encryptBtn">
+                            <i class="fas fa-lock me-2"></i> Encrypt Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Policy Help -->
+        <div class="card shadow mt-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-question-circle me-2"></i> Policy Syntax Help
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="help-section">
+                            <h6 class="fw-semibold mb-3 text-primary">
+                                <i class="fas fa-code me-2"></i> Basic Operators
+                            </h6>
+                            <div class="help-items">
+                                <div class="help-item d-flex align-items-center mb-3">
+                                    <span class="operator-badge bg-primary me-3">AND</span>
+                                    <span class="small">Both attributes required</span>
+                                </div>
+                                <div class="help-item d-flex align-items-center mb-3">
+                                    <span class="operator-badge bg-success me-3">OR</span>
+                                    <span class="small">Either attribute works</span>
+                                </div>
+                                <div class="help-item d-flex align-items-center">
+                                    <span class="operator-badge bg-info me-3">( )</span>
+                                    <span class="small">Group expressions</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="help-section">
+                            <h6 class="fw-semibold mb-3 text-primary">
+                                <i class="fas fa-list-alt me-2"></i> Example Policies
+                            </h6>
+                            <div class="help-items">
+                                <div class="help-item mb-3">
+                                    <code class="d-block border rounded p-2 bg-light">admin</code>
+                                    <small class="text-muted">Simple single attribute</small>
+                                </div>
+                                <div class="help-item mb-3">
+                                    <code class="d-block border rounded p-2 bg-light">user AND read_access</code>
+                                    <small class="text-muted">Multiple attributes required</small>
+                                </div>
+                                <div class="help-item">
+                                    <code class="d-block border rounded p-2 bg-light">(admin OR manager) AND active</code>
+                                    <small class="text-muted">Complex grouped policy</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Clean Admin Dashboard Style */
+.page-header {
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    color: #5A5C69;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item a {
+    color: #858796;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #858796;
+}
+
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+.text-primary {
+    color: #4e73df !important;
+}
+
+.font-weight-bold {
+    font-weight: 600 !important;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-outline-secondary {
+    color: #858796;
+    border-color: #858796;
+}
+
+.form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+code {
+    background-color: #f8f9fc;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: #5a5c69;
+}
+</style>
+
+<script>
+// Clean form validation and interactions
+document.addEventListener('DOMContentLoaded', function() {
+    const encryptForm = document.getElementById('encryptForm');
+    const submitBtn = document.getElementById('encryptBtn');
+    
+    if (encryptForm) {
+        encryptForm.addEventListener('submit', function(e) {
+            const message = document.getElementById('message').value.trim();
+            const policy = document.getElementById('policy').value.trim();
+            
+            if (message.length < 1) {
+                e.preventDefault();
+                showToast('Please enter a message to encrypt.', 'warning');
+                return;
+            }
+            
+            if (policy.length < 1) {
+                e.preventDefault();
+                showToast('Please enter an access policy.', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Encrypting...';
+            submitBtn.disabled = true;
+            
+            // Re-enable after 10 seconds as failsafe
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-lock me-2"></i> Encrypt Message';
+                submitBtn.disabled = false;
+            }, 10000);
+        });
+    }
+    
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    });
+});
+
+// Toast notification function
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} alert-dismissible position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px; opacity: 0; transform: translateX(100%);';
+    
+    toast.innerHTML = `
+        <i class="fas fa-info-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(0)';
+        toast.style.transition = 'all 0.3s ease';
+    }, 10);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}
