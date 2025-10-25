@@ -26,6 +26,7 @@ echo - User management with proper form fields
 echo - Decryption working for all users
 echo - Auto-registration of users in Firebase
 echo - Better error handling and debugging
+echo - Virtual environment optional: .\venv\Scripts\activate
 echo.
 echo Press Ctrl+C to stop the server
 echo.
